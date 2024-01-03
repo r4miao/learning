@@ -1,3 +1,1 @@
-This doc1 is unique to branch "dev1"
-
 This is the main branch version. 
