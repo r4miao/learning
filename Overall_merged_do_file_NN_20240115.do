@@ -1,6 +1,8 @@
+
+cd "D:\OneDrive - Clemson University\My Teaching\Clemson\MA_Thesis_committees\Noor_Nishan\Data"
 //2007-2011//
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0033_csv(2007-2011)\nhgis0033_csv\nhgis0033_ds184_20115_zcta.csv"
+import delimited "nhgis0033_ds184_20115_zcta.csv", clear
 rename mnte001 totalpop
 label var totalpop "total population"
 rename mnue002 whitepop
@@ -33,19 +35,19 @@ gen age60 = (mnie018 + mnie019 + mnie020 + mnie021 + mnie022 + mnie023 + mnie024
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome medincome_black medincome_white unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, temp1.dta",replace
+save "2007_2011temp1.dta",replace
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0033_csv(2007-2011)\nhgis0033_csv\nhgis0033_ds185_20115_zcta.csv", clear
+import delimited "nhgis0033_ds185_20115_zcta.csv", clear
 rename m6de001 gini
 label var gini "Gini index"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, temp2.dta", replace
+save "2007_2011temp2.dta", replace
 
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, temp1.dta"
+merge 1:1 zcta5a using "2007_2011temp1.dta"
 drop _merge
 gen wave=1
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, merged.dta", replace  
+save"2007_2011merged.dta", replace  
 //N=32,989
 
 ************************************************************************************************************************
@@ -55,7 +57,7 @@ save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, merged.dta", r
 //2008-2012//
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0030_csv(2008-2012)\nhgis0030_csv\nhgis0030_ds191_20125_zcta.csv"
+import delimited "nhgis0030_ds191_20125_zcta.csv", clear
 rename qspe001 totalpop
 label var totalpop "total population"
 rename qsqe002 whitepop
@@ -88,25 +90,25 @@ gen age60 = (qsee018 + qsee019 + qsee020 + qsee021 + qsee022 + qsee023 + qsee024
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome medincome_black medincome_white unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2008-2012, temp1.dta", replace
+save "2008_2012temp1.dta", replace
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0030_csv(2008-2012)\nhgis0030_csv\nhgis0030_ds192_20125_zcta.csv", clear
+import delimited "nhgis0030_ds192_20125_zcta.csv", clear
 rename rcbe001 gini
 label var gini "Gini index"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini
-save  "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2008-2012, temp2.dta", replace
+save  "2008_2012temp2.dta", replace
 
 
-merge 1:1 zcta5a using  "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2008-2012, temp1.dta"
+merge 1:1 zcta5a using  "2008_2012temp1.dta"
 drop _merge
 gen wave=2
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2008-2012, merged.dta", replace  //N=32,989
+save"2008_2012merged.dta", replace  //N=32,989
 ************************************************************************************************************************
 
 //2009-2013//
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0034_csv(2009-2013)\nhgis0034_csv\nhgis0034_ds201_20135_zcta.csv"
+import delimited "nhgis0034_ds201_20135_zcta.csv", clear
 
 
 rename ueee001 totalpop
@@ -141,26 +143,26 @@ gen age60 = (ueem018 + ueem019 + ueem020 + ueem021 + ueem022 + ueem023 + ueem024
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome medincome_black medincome_white unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2009-2013, temp1.dta", replace
+save "2009_2013temp1.dta", replace
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0034_csv(2009-2013)\nhgis0034_csv\nhgis0034_ds201_20135_zcta.csv", clear
+import delimited "nhgis0034_ds201_20135_zcta.csv", clear
 
 rename uile001 gini
 label var gini "Gini index"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2009-2013, temp2.dta", replace
+save "2009_2013_temp2.dta", replace
 
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2009-2013, temp1.dta"
+merge 1:1 zcta5a using "2009_2013temp1.dta"
 drop _merge
 gen wave=3
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2009-2013, merged.dta", replace
+save"2009_2013merged.dta", replace
  //N=32,989
 ************************************************************************************************************************
 
 //2010-2014//
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0028_csv(2010-2014)\nhgis0028_csv\nhgis0028_ds206_20145_zcta.csv", clear
+import delimited "nhgis0028_ds206_20145_zcta.csv", clear
 
 rename aba1e001 totalpop
 label var totalpop "total population"
@@ -194,30 +196,30 @@ gen age60 = (abaqe018 + abaqe019 + abaqe020 + abaqe021 + abaqe022 + abaqe023 + a
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome medincome_black medincome_white unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2010-2014, temp1.dta", replace
+save "2010_2014temp1.dta", replace
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0028_csv(2010-2014)\nhgis0028_csv\nhgis0028_ds207_20145_zcta.csv", clear
+import delimited "nhgis0028_ds207_20145_zcta.csv", clear
 
 rename abu0e001 gini
 label var gini "Gini index"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2010-2014, temp2.dta", replace
+save "2010_2014temp2.dta", replace
 
 
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2010-2014, temp1.dta"
+merge 1:1 zcta5a using "2010_2014temp1.dta"
 drop _merge
 gen wave=4
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2010-2014, merged.dta", replace  
+save"2010_2014merged.dta", replace  
 //N=32989
 ************************************************************************************************************************
 
 
-//2011-2015//
+//2011_2015//
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0026_csv(2011-2015)\nhgis0026_csv\nhgis0026_ds215_20155_zcta.csv"
+import delimited "nhgis0026_ds215_20155_zcta.csv", clear
 
 rename adkwe001 totalpop
 label var totalpop "total population"
@@ -247,10 +249,10 @@ gen age60 = (adkle018 + adkle019 + adkle020 + adkle021 + adkle022 + adkle023 + a
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, temp1.dta", replace
+save "2011_2015temp1.dta", replace
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0026_csv(2011-2015)\nhgis0026_csv\nhgis0026_ds216_20155_zcta.csv", clear
+import delimited "nhgis0026_ds216_20155_zcta.csv", clear
 
 rename ad4be001 gini
 label var gini "Gini index"
@@ -260,14 +262,13 @@ rename ad3ve001 medincome_white
 label var medincome_white "household median income White"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini medincome_black medincome_white
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, temp2.dta", replace
+save "2011_2015temp2.dta", replace
 
 
-
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, temp1.dta"
+merge 1:1 zcta5a using "2011_2015temp1.dta"
 drop _merge
 gen wave=5
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, merged.dta", replace  
+save"2011_2015merged.dta", replace  
 //N=32989
 ************************************************************************************************************************
 
@@ -275,7 +276,7 @@ save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, merged.dta", r
 //2012-2016//
   
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0029_csv(2012-2016)\nhgis0029_csv\nhgis0029_ds225_20165_zcta.csv", clear
+import delimited "nhgis0029_ds225_20165_zcta.csv", clear
   
 rename af2le001 totalpop
 label var totalpop "total population"
@@ -305,10 +306,10 @@ gen age60 = (af2ae018 + af2ae019 + af2ae020 + af2ae021 + af2ae022 + af2ae023 + a
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_prop colpercent poverty medincome unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, temp1.dta", replace
+save "2012_2016temp1.dta", replace
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0029_csv(2012-2016)\nhgis0029_csv\nhgis0029_ds226_20165_zcta.csv", clear
+import delimited "nhgis0029_ds226_20165_zcta.csv", clear
 rename agl1e001 gini
 label var gini "Gini index"
 rename aglfe001 medincome_black
@@ -317,14 +318,13 @@ rename aglle001 medincome_white
 label var medincome_white "household median income White"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini medincome_black medincome_white
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, temp2.dta", replace
+save "2012_2016temp2.dta", replace
 
 
-
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, temp1.dta"
+merge 1:1 zcta5a using "2012_2016temp1.dta"
 drop _merge
 gen wave=6
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, merged.dta", replace  
+save"2012_2016merged.dta", replace  
 //N=32989
 
 ************************************************************************************************************************
@@ -332,7 +332,7 @@ save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, merged.dta", r
 
 //2013-2017//
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0031_csv(2013-2017)\nhgis0031_csv\nhgis0031_ds233_20175_zcta.csv", clear
+import delimited "nhgis0031_ds233_20175_zcta.csv", clear
 
 rename ahy1e001 totalpop
 label var totalpop "total population"
@@ -362,11 +362,11 @@ gen age60 = (ahyqe018 + ahyqe019 + ahyqe020 + ahyqe021 + ahyqe022 + ahyqe023 + a
 label var age60 "population proportion 60+"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e totalpop whitepop blackpop latinopop male_prop female_pro colpercent poverty medincome unemploy rent medage age60 //keep only necessary variables from this table
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2013-2017, temp1.dta", replace
+save "2013_2017temp1.dta", replace
 
 
 
-import delimited "C:\Users\HH Traders\Downloads\Documents\ADRD\Raw data\nhgis0031_csv(2013-2017)\nhgis0031_csv\nhgis0031_ds234_20175_zcta.csv", clear
+import delimited "nhgis0031_ds234_20175_zcta.csv", clear
 rename aiije001 gini
 label var gini "Gini index"
 rename aihxe001 medincome_black
@@ -375,33 +375,34 @@ rename aih3e001 medincome_white
 label var medincome_white "household median income White"
 drop if stusab == "PR"  //drop zipcode areas in Puerto Rico
 keep gisjoin year zcta5a geoid name_e gini medincome_black medincome_white
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2013-2017, temp2.dta", replace
+save "2013_2017temp2.dta", replace
 
-merge 1:1 zcta5a using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2013-2017, temp1.dta"
+merge 1:1 zcta5a using "2013_2017temp1.dta"
 drop _merge
 gen wave=7
-save"C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2013-2017, merged.dta", replace  
+save"2013_2017merged.dta", replace  
 //N=32989
 
 ************************************************************************************************************************
-
+stop
 ************************************************************************************************************************
 
 
 //All waves merged//
 
-use    "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2007-2011, merged.dta" , clear
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2008-2012, merged.dta"
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2009-2013, merged.dta"
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2010-2014, merged.dta"
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2011-2015, merged.dta"
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2012-2016, merged.dta"
-append using "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\2013-2017, merged.dta"
+use    "2007_2011merged.dta" , clear
+append using "2008_2012merged.dta"
+append using "2009_2013merged.dta"
+append using "2010_2014merged.dta"
+append using "2011_2015merged.dta"
+append using "2012_2016merged.dta"
+append using "2013_2017merged.dta"
 label define waves 1 "2007-2011" 2 "2008-2012" 3 "2009-2013" 4 "2010-2014" 5 "2011-2015" 6 "2012-2016" 7 "2013-2017"
 label values wave waves
-drop year
 sort zcta5a wave
 order zcta5a wave
+drop year
+save "allyear_merged.dta", replace
 
 
 
@@ -409,11 +410,11 @@ order zcta5a wave
 ************************************************************************************************************************
  * To merge the two data files, both of them shall be sorted first. In sorting, please put the ID variables in correct order (i.e., higher order first, then followed by lower order ID variables)
 
-use "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\allyear_merged.dta",clear
+use "allyear_merged.dta",clear
 recode wave (1=2011) (2=2012) (3=2013) (4=2014) (5=2015) (6=2016) (7=2017), gen(YODX)
 gen zipcode = zcta5a
 sort zipcode YODX
-merge 1:1 zipcode YODX using "C:\Users\HH Traders\Downloads\zipcode_incidence_data.dta"
+merge 1:1 zipcode YODX using "zipcode_incidence_data.dta"
 
 keep if _merge==3
 
@@ -423,53 +424,46 @@ label var wave "Time-intervals"
 ////////////////////////////////////////////////////////////////////////////////
 
 
-drop if case ==.
-drop if case_w ==.
-drop if case_b ==.
-
-rename case ADRD_total
-rename case_w ADRD_white
-rename case_b ADRD_black
-
-
 ///I created a weighted index with Factor Analysis as Dr.Luo suggested//
 //factor analysis for variable deduction code//
-factor medincome colpercent poverty unemploy rent , factors(2)
-predict factor1 factor2
-egen factor1_std = std(factor1)
-egen factor2_std = std(factor2)
-gen index = factor1_std + factor2_std
-list medincome colpercent poverty unemploy rent factor1 factor2 factor1_std factor2_std index
-rename index SES
+factor medincome colpercent poverty, pcf  
+predict SES   //default: higher score indicates better SES
+replace SES = SES * -1   //this is to reverse code SES, such that higher score represents higher level of socioeconomic deprivation
 label var SES "Area Based Socio-economic Measure"
-drop if SES ==.
+
+*create dependent variables
+gen ADRD_Total = ceil(case/totalpop* 10000)
+label var ADRD_Total "ADRD Incidence per 10k"
+drop if ADRD_Total > 10000
+gen ADRD_White = ceil(case_w/whitepop* 10000)
+label var ADRD_White "ADRD Incidence per 10k WHITE"
+gen ADRD_Black = ceil(case_b/blackpop* 10000)
+label var ADRD_Black "ADRD Incidence per 10k BLACK"
 
 
+ 
 
-
-
-save "C:\Users\HH Traders\Downloads\Documents\ADRD\Data\allyear_merged.dta".
 
 //Descriptive Statistics//
  
- summarize wave medage ADRD_total ADRD_white ADRD_black SES male_prop female_prop
+ summarize wave medage ADRD_Total ADRD_White ADRD_Black SES male_prop female_prop
  
  //As all the variables are continous//
  
  //Multivariate Analysis//
  
- reg ADRD_total SES medage male_prop female_prop
- reg ADRD_total SES wave medage male_prop female_prop
- reg ADRD_total medage male_prop female_prop c.SES##c.wave
+ reg ADRD_Total SES medage male_prop female_prop
+ reg ADRD_Total SES wave medage male_prop female_prop
+ reg ADRD_Total medage male_prop female_prop c.SES##c.wave
  
-reg ADRD_white SES medage male_prop female_prop
-reg ADRD_white SES wave medage male_prop female_prop
-reg ADRD_white medage male_prop female_prop c.SES##c.wave
+reg ADRD_White SES medage male_prop female_prop
+reg ADRD_White SES wave medage male_prop female_prop
+reg ADRD_White medage male_prop female_prop c.SES##c.wave
 
-reg ADRD_black SES medage male_prop female_prop
-reg ADRD_black SES wave medage male_prop female_prop
-reg ADRD_black medage male_prop female_prop c.SES##c.wave
-
+reg ADRD_Black SES medage male_prop female_prop
+reg ADRD_Black SES wave medage male_prop female_prop
+reg ADRD_Black medage male_prop female_prop c.SES##c.wave
+ 
 /// As I have three dependent variable , I have to do multiple regression with each separately.
 // I wanted to conduct hierachial regression but as I have an interaction term, I have to do it step by step.
 
