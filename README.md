@@ -1,4 +1,4 @@
 # learning
-for learning git
+for learning 
 
-I wrote this line on local computer to try to push it to github repo "learning".
+I created this temporary github repository to collaborate/mentor my grad students in coding version control.
