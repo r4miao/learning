@@ -73,7 +73,7 @@ label var OD_b "Total Other Dementia incidence_Black"
 egen pickone=tag(zipcode YODX)
 order alzhid zipcode YODX pickone Dementia case* AD* VD* MD* OD* Race0 Sex0 YOB YOD UCDB Alive17 Vital COUN_RS0 Cm_nh_u
 
-merge m:1 zipcode using "SC_ZCTA_crosswalk"
+merge m:1 zipcode using "SC_ZCTA_crosswalk.dta"
 
 *drop 37 individuals whose zip code does not have match in the census crosswalk data.
 keep if _merge==3   //(85 observations deleted); probably due to 
@@ -84,10 +84,12 @@ count // N=90,975
 
 *keep only zipcode level data
 keep if pickone==1
-keep zipcode YODX case* AD* VD* MD* OD*
+keep zcta YODX case* AD* VD* MD* OD*
 label var YODX "Registry Entry Year"
+rename zcta zipcode 
+label var zipcode "ZCTA code for SC Registry Data"
 
-unique zipcode  //486 zipcode areas
+unique zipcode  //409 zipcode areas
 count           //N=2,630  zipcode-year data entry
 
 save "zipcode_incidence_data.dta", replace
