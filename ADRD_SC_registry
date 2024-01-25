@@ -5,83 +5,89 @@ cd "D:\OneDrive - Clemson University\My Grant Project\Clemson_projects\SC_AD_Reg
 use "LiRequestSTATA_zipcode.dta", clear
 rename ALZHID alzhid
 merge 1:1 alzhid using "LiRequestSTATA.dta"
-
 keep if _merge==3   //N=304,901
 drop _merge
+
+*drop registry data before 2010, for accuracy reasons
 keep if YODX >=2011   //N=105,753; from 2011 to 2017 
 drop if missing(YODX) //(409 observations deleted); N= 105,344
-gen age_entry= YODX - YOB
-drop if (YODX==2010 & YOB<1905) | (YODX==2010 & YOB>1965)  //(0 observations deleted)
-drop if (YODX==2011 & YOB<1906) | (YODX==2011 & YOB>1966)  //(164 observations deleted)
-drop if (YODX==2012 & YOB<1907) | (YODX==2012 & YOB>1967)  //(155 observations deleted)
-drop if (YODX==2013 & YOB<1908) | (YODX==2013 & YOB>1968)  //(185 observations deleted)
-drop if (YODX==2014 & YOB<1909) | (YODX==2014 & YOB>1969)  //(170 observations deleted)
-drop if (YODX==2015 & YOB<1910) | (YODX==2015 & YOB>1970)  //(231 observations deleted)
-drop if (YODX==2016 & YOB<1911) | (YODX==2016 & YOB>1971)  //(260 observations deleted)
-drop if (YODX==2017 & YOB<1912) | (YODX==2017 & YOB>1972)  //(285 observations deleted)
 
-count // N=103,894
+*drop individuals who was younger than 60 at the time of entry
+gen age_entry= YODX - YOB 
+drop if age_entry<60  //(6,357 observations deleted)
+count // N= 98,987
 format %12.0g ZIP0
 
-drop if missing(ZIP0)  //(794 observations deleted); N= 103,100
+*drop individuals missing zip code information
+drop if missing(ZIP0)  //(715 observations deleted); N= 98,272
 sort ZIP0
 gen zipcode=ZIP0
 replace zipcode=int(zipcode/10000) if zipcode > 100000
-drop if zipcode<29001     //(6,763 observations deleted)
-drop if zipcode>29999    //(657 observations deleted) 
-count  //N=95,680
-**# total annual ADRD incidence # 
-bysort zipcode YODX: gen case=_N
+
+*drop individuals whose zip code is outside of SC; 
+*SC zipcode ranges from 29001 (Alcolu, Clarendon County) to 29945 (Yemassee, Hampton County)
+drop if zipcode<29001     //(6,623 observations deleted)
+drop if zipcode>29999    //(637 observations deleted)
+count  //N=91,012
+
+**# total annual ADRD incidence: by Year of Entry # 
+bysort zipcode YODX:  gen case=_N
 bysort zipcode YODX: egen case_w=total(Race0==1)
 bysort zipcode YODX: egen case_b=total(Race0==2)
-label var case "Total ADRD incidence"
+label var case   "Total ADRD incidence"
 label var case_w "Total ADRD incidence_White"
 label var case_b "Total ADRD incidence_Black"
 
 **# total annual Alzheimer's incidence # 
-bysort zipcode YODX: egen AD=total(Dementia==1)
+bysort zipcode YODX: egen AD  =total(Dementia==1)
 bysort zipcode YODX: egen AD_w=total(Dementia==1 & Race0==1)
 bysort zipcode YODX: egen AD_b=total(Dementia==1 & Race0==2)
-label var AD "Total Alzheimer's Disease incidence"
+label var AD   "Total Alzheimer's Disease incidence"
 label var AD_w "Total Alzheimer's Disease incidence_White"
 label var AD_b "Total Alzheimer's Disease incidence_Black"
 
 **# total annual Vascular Dementia incidence #
-bysort zipcode YODX: egen VD=total(Dementia==2)
+bysort zipcode YODX: egen VD  =total(Dementia==2)
 bysort zipcode YODX: egen VD_w=total(Dementia==2 & Race0==1) 
 bysort zipcode YODX: egen VD_b=total(Dementia==2 & Race0==2)
-label var VD "Total Vascular Dementia incidence"
+label var VD   "Total Vascular Dementia incidence"
 label var VD_w "Total Vascular Dementia incidence_White"
 label var VD_b "Total Vascular Dementia incidence_Black"
 
 **# total annual Mixed Dementia incidence #
-bysort zipcode YODX: egen MD=total(Dementia==3)
+bysort zipcode YODX: egen MD  =total(Dementia==3)
 bysort zipcode YODX: egen MD_w=total(Dementia==3 & Race0==1)
 bysort zipcode YODX: egen MD_b=total(Dementia==3 & Race0==2)
-label var MD "Total Mixed Dementia incidence"
+label var MD   "Total Mixed Dementia incidence"
 label var MD_w "Total Mixed Dementia incidence_White"
 label var MD_b "Total Mixed Dementia incidence_Black"
 
 **# total annual Other Dementia incidence #
-bysort zipcode YODX: egen OD=total(Dementia==4)
+bysort zipcode YODX: egen OD  =total(Dementia==4)
 bysort zipcode YODX: egen OD_w=total(Dementia==4 & Race0==1)
 bysort zipcode YODX: egen OD_b=total(Dementia==4 & Race0==2)
-label var OD "Total Other Dementia incidence"
+label var OD   "Total Other Dementia incidence"
 label var OD_w "Total Other Dementia incidence_White"
 label var OD_b "Total Other Dementia incidence_Black"
 
 egen pickone=tag(zipcode YODX)
 order alzhid zipcode YODX pickone Dementia case* AD* VD* MD* OD* Race0 Sex0 YOB YOD UCDB Alive17 Vital COUN_RS0 Cm_nh_u
-br
 
-merge m:1 zipcode using "D:\Google Drive\My Grant Project\Clemson_projects\SC_AD_Registry\Data\SC_ZCTA_crosswalk"
-keep if _merge==3   //(104 observations deleted); probably due to 
-                    // 1) some Registry zipcode was incorrectly recorded (no such zipcode existed; 66 cases), or 
-					// 2) some zipcodes have no ADRD cases registered (38 zipcode; e.g., Peak, SC 29122)
+merge m:1 zipcode using "SC_ZCTA_crosswalk"
+
+*drop 37 individuals whose zip code does not have match in the census crosswalk data.
+keep if _merge==3   //(85 observations deleted); probably due to 
+                    // 1) some Registry zipcode was incorrectly recorded (no such zipcode existed; 37 cases from master), or 
+					// 2) some zipcodes have no ADRD cases registered (48 zipcode; e.g., Peak, SC 29122)
 drop _merge
+count // N=90,975
 
+*keep only zipcode level data
 keep if pickone==1
 keep zipcode YODX case* AD* VD* MD* OD*
 label var YODX "Registry Entry Year"
 
-save "D:\Google Drive\My Grant Project\Clemson_projects\SC_AD_Registry\Data\zipcode_incidence_data.dta", replace
+unique zipcode  //486 zipcode areas
+count           //N=2,630  zipcode-year data entry
+
+save "zipcode_incidence_data.dta", replace
