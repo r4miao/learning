@@ -4,7 +4,7 @@
 
 *Data importing
  import sas using "C:\Users\Windows\OneDrive - Clemson University\Clemson Research\Thesis\FY 2016 to FY 2022 Statistical Report Data\felony.sas7bdat", clear
- 
+  
 *Deleting irrelevant variables
  drop aoc_chrg armedhf asr80 CHRG99 CHRG_GS CHRGCODE chrgfmti CHRGTEXT CONV99 CONV_GS districtsc districtsc_orig divisionsc divisionsc_orig drugtraff hfbe jra lifepar_lt18 mit OFFDATE offsas sent6mo SENTDATE sentqtr sentsas SERVDATE servsas ssa ssagrid _asr _cts _ctsdays _sexoffcond _sexoffnocontact _specprob _specprobfacil _supvprob 
 
@@ -210,21 +210,26 @@ dtable i.sex i.race_cat i.age_cat i.active i.convppdo i.plea_new i.atty_new, by(
 egen cases_per_month = count(sentmonths), by(sentmonths_date)
 sort sentmonths_date
 
-twoway (line cases_per_month sentmonths_date), title("Cases Heard Per Month") xtitle("Month") ytitle("Number of Cases") xlabel(, format(%tm) angle(45)) legend(off)
+twoway (line cases_per_month sentmonths_date if sentmonths <=202003, lpattern(solid) lcolor(black)) ///
+       (line cases_per_month sentmonths_date if sentmonths >=202101, lpattern(solid) lcolor(black)) ///
+       (line cases_per_month sentmonths_date if covid_timeline ==2, lpattern(dash) lcolor(red)),  ///
+	   legend(on order(3 "COIVD Shutdown (2020/03-2021/01)")) title("Cases Heard Per Month") xtitle("Month") ytitle("Number of Cases") xlabel(, format(%tm) angle(45))  
 
 
 **Mode of disposition trends
 
 gen sentmonths_date = ym(real(substr(string(sentmonths),1,4)), real(substr(string(sentmonths),5,2)))
 format sentmonths_date %tm
-egen count_by_group1 = count(newdisp), by (sentmonths_date newdisp)
-bysort newdisp sentmonths_date: egen total_count1 = sum(newdisp)
+egen pickonemonth=tag(sentmonths_date)
+bysort sentmonths_date: egen count_plea_per_month  = total(newdisp==1)
+bysort sentmonths_date: egen count_bench_per_month = total(newdisp==2)
+bysort sentmonths_date: egen count_jury_per_month  = total(newdisp==3)
 
-twoway (line total_count1 sentmonths_date if newdisp == 1, lcolor(black)), legend(label(1 "Plea")) 
+twoway (line count_plea_per_month sentmonths_date if pickonemonth == 1, lcolor(black)), legend(label(1 "Plea")) 
 
-twoway (line total_count1 sentmonths_date if newdisp == 2, lcolor(black)),legend(label(2 "Bench")) /*not sure the issue on this one*/
-
-twoway (line total_count1 sentmonths_date if newdisp == 3, lcolor(black)),legend(label(3 "Jury")) 
+twoway (line count_bench_per_month sentmonths_date if pickonemonth == 1, lcolor(black)),legend(label(2 "Bench")) /*not sure the issue on this one*/ 
+*it seems that there were only a few cases for this category, hence the sparse plot.
+twoway (line count_jury_per_month sentmonths_date if pickonemonth == 1, lcolor(black)),legend(label(3 "Jury")) 
 
 **Offense type trends  
  
@@ -232,6 +237,7 @@ twoway (line total_count1 sentmonths_date if newdisp == 3, lcolor(black)),legend
 tab convppdo postcovid2, freq
 tab convppdo covidmonths, freq
 
+	*I am not sure what you are trying to visualize here.
 	*total cases by covid onset month trend
 graph bar (count) convppdo, over(covidmonths) ///
 	   title("Count of Offenses by Type Across Covid Months") ///
@@ -243,9 +249,15 @@ graph bar (count), over(covidmonths) over(convppdo) asyvars ///
        b1title("Fiscal Year") ///
        ytitle("Offense Type")
 	   * ^^ different way of visualizing 
-egen count_by_group2 = count(convppdo), by(sentmonths_date convppdo)
-bysort convppdo sentmonths_date: egen total_count2 = sum(count_by_group2)
-twoway (line total_count2 sentmonths_date if convppdo == 1, lcolor(black)) (line total_count2 sentmonths_date if convppdo == 2, lcolor(red)) (line total_count2 sentmonths_date if convppdo == 3, lcolor(green)) (line total_count2 sentmonths_date if convppdo == 4, lcolor(blue)), legend(label(1 "Person") label(2 "Property") label(3 "Drug") label(4 "Other"))
+bysort sentmonths_date: egen count_person_per_month   = total(convppdo==1)
+bysort sentmonths_date: egen count_property_per_month = total(convppdo==2)
+bysort sentmonths_date: egen count_drug_per_month     = total(convppdo==3)
+bysort sentmonths_date: egen count_other_per_month    = total(convppdo==4)
+twoway (line count_person_per_month   sentmonths_date if pickonemonth == 1, lcolor(black)) ///
+       (line count_property_per_month sentmonths_date if pickonemonth == 1, lcolor(red))   ///
+	   (line count_drug_per_month     sentmonths_date if pickonemonth == 1, lcolor(green)) ///
+	   (line count_other_per_month    sentmonths_date if pickonemonth == 1, lcolor(blue)), ///
+	   legend(label(1 "Person") label(2 "Property") label(3 "Drug") label(4 "Other"))
 
 
 ***************************************************************************REGRESSION MODELS
@@ -254,10 +266,21 @@ twoway (line total_count2 sentmonths_date if convppdo == 1, lcolor(black)) (line
 ***OLS (Sentence Length)***
 
 **Basic regression w/o time variable
-regress log_min_sent_length age age2 male ib1.race_cat prl severity atty_new plea_new i.convppdo county if active  == 1
+gen log_min_sent_length2 = log(min_sent_length+.01)   // without adding .01 or any other very small quantity, the zero values will be turned into missing data
+                                                      // since you have a lot of zeros in the variable min_sent_length, the reduction of sample size is substantial
+													  // the estimated effects will be greatly biased downward.
+est clear
+xtset county
+eststo youroriginalmodel:     xtreg log_min_sent_length age age2 male b1.race_cat prl severity i.atty_new i.plea_new i.convppdo, fe   //equivalent to controlling a long list of county dummies
+eststo newlogvarmodel:        xtreg log_min_sent_length2 age age2 male b1.race_cat prl severity i.atty_new i.plea_new i.convppdo, fe  //with newly created log variable
+eststo negativebinomialmodel: nbreg min_sent_length age age2 male b1.race_cat prl severity i.atty_new i.plea_new i.convppdo i.county   // negative binomial model - i think more appropriate
+esttab *
+
+* I did not work on the following syntax.
 
 **IV: postcovid (binary)
 	*2015-2022
+	
 regress log_min_sent_length age age2 male i.race_cat prl severity atty_new plea_new i.convppdo county postcovid if active == 1
 
 regress log_min_sent_length age age2 male ib1.race_cat prl severity atty_new plea_new i.convppdo county postcovid postcovid##ib1.race_cat if active == 1
